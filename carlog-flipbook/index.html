@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CARLOG - Series A Pitch Deck 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 14px;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .logo-sub {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-weight: 400;
+            margin-left: 12px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .control-btn.active {
+            background: rgba(59, 130, 246, 0.4);
+            border-color: #3b82f6;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Thumbnail Sidebar */
+        .thumbnail-sidebar {
+            width: 160px;
+            background: rgba(0, 0, 0, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            padding: 16px 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .thumbnail-sidebar.hidden {
+            transform: translateX(-100%);
+            position: absolute;
+        }
+
+        .thumbnail-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .thumbnail-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .thumbnail-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 3px;
+        }
+
+        .thumbnail {
+            margin-bottom: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .thumbnail:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: scale(1.02);
+        }
+
+        .thumbnail.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            display: block;
+        }
+
+        .thumbnail-number {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Flipbook Container */
+        .flipbook-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        #flipbook {
+            width: 1200px;
+            height: 675px;
+        }
+
+        #flipbook .page {
+            background: #111;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #flipbook .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Navigation Arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 50;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(59, 130, 246, 0.5);
+            border-color: #3b82f6;
+        }
+
+        .nav-arrow.prev {
+            left: 20px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .nav-arrow.next {
+            right: 20px;
+            border-radius: 12px 0 0 12px;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-indicator {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(59, 130, 246, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .page-indicator span {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        /* Fullscreen styles */
+        body.fullscreen .header,
+        body.fullscreen .footer {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.fullscreen:hover .header,
+        body.fullscreen:hover .footer {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 1024px) {
+            .thumbnail-sidebar {
+                display: none;
+            }
+
+            #flipbook {
+                width: 100%;
+                height: auto;
+                max-width: 600px;
+            }
+
+            .nav-arrow {
+                width: 40px;
+                height: 60px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 16px;
+            }
+
+            .logo-text {
+                font-size: 16px;
+            }
+
+            .logo-sub {
+                display: none;
+            }
+
+            .control-btn span {
+                display: none;
+            }
+
+            .control-btn {
+                padding: 8px;
+            }
+
+            #flipbook {
+                max-width: 100%;
+            }
+
+            .nav-arrow {
+                width: 32px;
+                height: 50px;
+                font-size: 16px;
+            }
+
+            .nav-arrow.prev {
+                left: 5px;
+            }
+
+            .nav-arrow.next {
+                right: 5px;
+            }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">CARLOG IR Deck 로딩중...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">CL</div>
+            <div class="logo-text">CARLOG</div>
+            <div class="logo-sub">Series A Pitch Deck • JAN 2026</div>
+        </div>
+        <div class="header-controls">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                SYSTEM ONLINE
+            </div>
+            <button class="control-btn" id="toggleThumbnails" title="썸네일 토글">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>썸네일</span>
+            </button>
+            <button class="control-btn" id="fullscreenBtn" title="전체화면">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <polyline points="9 21 3 21 3 15"></polyline>
+                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+                <span>전체화면</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Thumbnail Sidebar -->
+        <aside class="thumbnail-sidebar" id="thumbnailSidebar">
+            <div class="thumbnail active" data-page="1">
+                <img src="pages/thumbs/thumb_1.jpg" alt="Page 1">
+                <span class="thumbnail-number">01</span>
+            </div>
+            <div class="thumbnail" data-page="2">
+                <img src="pages/thumbs/thumb_2.jpg" alt="Page 2">
+                <span class="thumbnail-number">02</span>
+            </div>
+            <div class="thumbnail" data-page="3">
+                <img src="pages/thumbs/thumb_3.jpg" alt="Page 3">
+                <span class="thumbnail-number">03</span>
+            </div>
+            <div class="thumbnail" data-page="4">
+                <img src="pages/thumbs/thumb_4.jpg" alt="Page 4">
+                <span class="thumbnail-number">04</span>
+            </div>
+            <div class="thumbnail" data-page="5">
+                <img src="pages/thumbs/thumb_5.jpg" alt="Page 5">
+                <span class="thumbnail-number">05</span>
+            </div>
+            <div class="thumbnail" data-page="6">
+                <img src="pages/thumbs/thumb_6.jpg" alt="Page 6">
+                <span class="thumbnail-number">06</span>
+            </div>
+            <div class="thumbnail" data-page="7">
+                <img src="pages/thumbs/thumb_7.jpg" alt="Page 7">
+                <span class="thumbnail-number">07</span>
+            </div>
+            <div class="thumbnail" data-page="8">
+                <img src="pages/thumbs/thumb_8.jpg" alt="Page 8">
+                <span class="thumbnail-number">08</span>
+            </div>
+            <div class="thumbnail" data-page="9">
+                <img src="pages/thumbs/thumb_9.jpg" alt="Page 9">
+                <span class="thumbnail-number">09</span>
+            </div>
+        </aside>
+
+        <!-- Flipbook Container -->
+        <div class="flipbook-container">
+            <button class="nav-arrow prev" id="prevBtn">❮</button>
+            
+            <div id="flipbook">
+                <div class="page"><img src="pages/page_1.jpg" alt="Cover"></div>
+                <div class="page"><img src="pages/page_2.jpg" alt="Problem"></div>
+                <div class="page"><img src="pages/page_3.jpg" alt="Solution"></div>
+                <div class="page"><img src="pages/page_4.jpg" alt="Core Product"></div>
+                <div class="page"><img src="pages/page_5.jpg" alt="Technology"></div>
+                <div class="page"><img src="pages/page_6.jpg" alt="Market"></div>
+                <div class="page"><img src="pages/page_7.jpg" alt="Business Model"></div>
+                <div class="page"><img src="pages/page_8.jpg" alt="Team"></div>
+                <div class="page"><img src="pages/page_9.jpg" alt="Ask"></div>
+            </div>
+
+            <button class="nav-arrow next" id="nextBtn">❯</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomOut" title="축소">−</button>
+            <button class="zoom-btn" id="zoomIn" title="확대">+</button>
+        </div>
+        <div class="page-indicator">
+            Page <span id="currentPage">1</span> / <span id="totalPages">9</span>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            const totalPages = 9;
+            let currentZoom = 1;
+            const minZoom = 0.5;
+            const maxZoom = 1.5;
+
+            // Initialize flipbook
+            $('#flipbook').turn({
+                width: 1200,
+                height: 675,
+                autoCenter: true,
+                display: 'single',
+                acceleration: true,
+                gradients: true,
+                elevation: 50,
+                when: {
+                    turning: function(event, page, view) {
+                        updatePageIndicator(page);
+                        updateThumbnails(page);
+                    },
+                    turned: function(event, page, view) {
+                        updatePageIndicator(page);
+                        updateThumbnails(page);
+                    }
+                }
+            });
+
+            // Hide loading overlay when ready
+            setTimeout(function() {
+                $('#loadingOverlay').addClass('hidden');
+            }, 1000);
+
+            // Update page indicator
+            function updatePageIndicator(page) {
+                $('#currentPage').text(page);
+            }
+
+            // Update thumbnails
+            function updateThumbnails(page) {
+                $('.thumbnail').removeClass('active');
+                $(`.thumbnail[data-page="${page}"]`).addClass('active');
+                
+                // Scroll thumbnail into view
+                const activeThumb = $(`.thumbnail[data-page="${page}"]`);
+                if (activeThumb.length) {
+                    activeThumb[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            // Navigation buttons
+            $('#prevBtn').click(function() {
+                $('#flipbook').turn('previous');
+            });
+
+            $('#nextBtn').click(function() {
+                $('#flipbook').turn('next');
+            });
+
+            // Thumbnail click
+            $('.thumbnail').click(function() {
+                const page = $(this).data('page');
+                $('#flipbook').turn('page', page);
+            });
+
+            // Keyboard navigation
+            $(document).keydown(function(e) {
+                if (e.keyCode === 37) { // Left arrow
+                    $('#flipbook').turn('previous');
+                } else if (e.keyCode === 39) { // Right arrow
+                    $('#flipbook').turn('next');
+                } else if (e.keyCode === 36) { // Home
+                    $('#flipbook').turn('page', 1);
+                } else if (e.keyCode === 35) { // End
+                    $('#flipbook').turn('page', totalPages);
+                }
+            });
+
+            // Toggle thumbnails
+            $('#toggleThumbnails').click(function() {
+                $('#thumbnailSidebar').toggleClass('hidden');
+                $(this).toggleClass('active');
+            });
+
+            // Fullscreen toggle
+            $('#fullscreenBtn').click(function() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().then(() => {
+                        $('body').addClass('fullscreen');
+                        $(this).addClass('active');
+                    });
+                } else {
+                    document.exitFullscreen().then(() => {
+                        $('body').removeClass('fullscreen');
+                        $(this).removeClass('active');
+                    });
+                }
+            });
+
+            // Zoom controls
+            function applyZoom() {
+                $('#flipbook').css('transform', `scale(${currentZoom})`);
+            }
+
+            $('#zoomIn').click(function() {
+                if (currentZoom < maxZoom) {
+                    currentZoom += 0.1;
+                    applyZoom();
+                }
+            });
+
+            $('#zoomOut').click(function() {
+                if (currentZoom > minZoom) {
+                    currentZoom -= 0.1;
+                    applyZoom();
+                }
+            });
+
+            // Touch/swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            $('#flipbook').on('touchstart', function(e) {
+                touchStartX = e.originalEvent.changedTouches[0].screenX;
+            });
+
+            $('#flipbook').on('touchend', function(e) {
+                touchEndX = e.originalEvent.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (diff > swipeThreshold) {
+                    $('#flipbook').turn('next');
+                } else if (diff < -swipeThreshold) {
+                    $('#flipbook').turn('previous');
+                }
+            }
+
+            // Responsive resize
+            function handleResize() {
+                const containerWidth = $('.flipbook-container').width() - 100;
+                const containerHeight = $('.flipbook-container').height() - 40;
+                
+                let width = Math.min(1200, containerWidth);
+                let height = width * (675 / 1200);
+                
+                if (height > containerHeight) {
+                    height = containerHeight;
+                    width = height * (1200 / 675);
+                }
+
+                $('#flipbook').turn('size', width, height);
+            }
+
+            $(window).resize(handleResize);
+            setTimeout(handleResize, 100);
+        });
+    </script>
+</body>
+</html>
